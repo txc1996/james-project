@@ -37,10 +37,13 @@ import org.apache.mailet.MailAddress;
 import org.apache.mailet.MailetContext;
 import org.slf4j.Logger;
 
+import com.google.common.base.Function;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Predicate;
+import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
@@ -63,14 +66,35 @@ public class FakeMailContext implements MailetContext {
     public static class Builder {
 
         private Logger logger;
+        private List<Record> records = new ArrayList<Record>();
 
         public Builder logger(Logger logger) {
             this.logger = logger;
             return this;
         }
 
+        public Builder record(Record record) {
+            this.records.add(record);
+            return this;
+        }
+
+        public Builder records(Collection<Record> records) {
+            this.records.addAll(records);
+            return this;
+        }
+
         public FakeMailContext build() {
-            return new FakeMailContext(Optional.fromNullable(logger));
+            return new FakeMailContext(Optional.fromNullable(logger), ImmutableList.copyOf(records));
+        }
+    }
+
+    public static class Record {
+        private final String recordName;
+        private final String recordAddress;
+
+        public Record(String recordName, String recordAddress) {
+            this.recordName = recordName;
+            this.recordAddress = recordAddress;
         }
     }
 
@@ -182,8 +206,10 @@ public class FakeMailContext implements MailetContext {
     private final HashMap<String, Object> attributes;
     private final List<SentMail> sentMails;
     private final Optional<Logger> logger;
+    private final List<Record> records;
 
-    private FakeMailContext(Optional<Logger> logger) {
+    private FakeMailContext(Optional<Logger> logger, List<Record> records) {
+        this.records = records;
         attributes = new HashMap<String, Object>();
         sentMails = new ArrayList<SentMail>();
         this.logger = logger;
@@ -200,8 +226,11 @@ public class FakeMailContext implements MailetContext {
     /**
      * @deprecated use the generic dnsLookup method
      */
-    public Collection<String> getMailServers(String host) {
-        return null;  // trivial implementation
+    public Collection<String> getMailServers(final String host) {
+        return FluentIterable.from(records)
+            .filter(matchesHost(host))
+            .transform(toRecodAddress())
+            .toList();
     }
 
     public MailAddress getPostmaster() {
@@ -375,5 +404,24 @@ public class FakeMailContext implements MailetContext {
     @Override
     public Logger getLogger() {
         return logger.orNull();
+    }
+
+
+    private Predicate<Record> matchesHost(final String host) {
+        return new Predicate<Record>() {
+            @Override
+            public boolean apply(Record input) {
+                return input.recordName.equals(host);
+            }
+        };
+    }
+
+    private Function<Record, String> toRecodAddress() {
+        return new Function<Record, String>() {
+            @Override
+            public String apply(Record input) {
+                return input.recordAddress;
+            }
+        };
     }
 }
