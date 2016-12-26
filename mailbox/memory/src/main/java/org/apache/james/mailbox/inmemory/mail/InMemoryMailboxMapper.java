@@ -46,9 +46,6 @@ public class InMemoryMailboxMapper implements MailboxMapper {
         mailboxesById = new ConcurrentHashMap<InMemoryId, Mailbox>(INITIAL_SIZE);
     }
 
-    /**
-     * @see org.apache.james.mailbox.store.mail.MailboxMapper#delete(org.apache.james.mailbox.store.mail.model.Mailbox)
-     */
     public void delete(Mailbox mailbox) throws MailboxException {
         mailboxesById.remove(mailbox.getMailboxId());
     }
@@ -57,9 +54,6 @@ public class InMemoryMailboxMapper implements MailboxMapper {
         mailboxesById.clear();
     }
 
-    /**
-     * @see org.apache.james.mailbox.store.mail.MailboxMapper#findMailboxByPath(org.apache.james.mailbox.model.MailboxPath)
-     */
     public synchronized Mailbox findMailboxByPath(MailboxPath path) throws MailboxException {
         Mailbox result = null;
         for (Mailbox mailbox:mailboxesById.values()) {
@@ -86,9 +80,6 @@ public class InMemoryMailboxMapper implements MailboxMapper {
         }
     }
 
-    /**
-     * @see org.apache.james.mailbox.store.mail.MailboxMapper#findMailboxWithPathLike(org.apache.james.mailbox.model.MailboxPath)
-     */
     public List<Mailbox> findMailboxWithPathLike(MailboxPath path) throws MailboxException {
         final String regex = path.getName().replace("%", ".*");
         List<Mailbox> results = new ArrayList<Mailbox>();
@@ -106,28 +97,19 @@ public class InMemoryMailboxMapper implements MailboxMapper {
             && mailbox.getName().matches(regex);
     }
 
-    /**
-     * @see org.apache.james.mailbox.store.mail.MailboxMapper#save(org.apache.james.mailbox.store.mail.model.Mailbox)
-     */
     public void save(Mailbox mailbox) throws MailboxException {
         InMemoryId id = (InMemoryId) mailbox.getMailboxId();
         if (id == null) {
             id = InMemoryId.of(mailboxIdGenerator.incrementAndGet());
-            ((SimpleMailbox) mailbox).setMailboxId(id);
+            mailbox.setMailboxId(id);
         }
         mailboxesById.put(id, mailbox);
     }
 
-    /**
-     * Do nothing
-     */
     public void endRequest() {
         // Do nothing
     }
 
-    /**
-     * @see org.apache.james.mailbox.store.mail.MailboxMapper#hasChildren(org.apache.james.mailbox.store.mail.model.Mailbox, char)
-     */
     public boolean hasChildren(Mailbox mailbox, char delimiter) throws MailboxException {
         String mailboxName = mailbox.getName() + delimiter;
         for (Mailbox box:mailboxesById.values()) {
@@ -143,9 +125,6 @@ public class InMemoryMailboxMapper implements MailboxMapper {
             && Objects.equal(mailbox.getUser(), otherMailbox.getUser());
     }
 
-    /**
-     * @see org.apache.james.mailbox.store.mail.MailboxMapper#list()
-     */
     public List<Mailbox> list() throws MailboxException {
         return new ArrayList<Mailbox>(mailboxesById.values());
     }
