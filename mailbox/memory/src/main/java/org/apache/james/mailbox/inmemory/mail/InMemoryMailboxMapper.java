@@ -56,6 +56,15 @@ public class InMemoryMailboxMapper implements MailboxMapper {
 
     public synchronized Mailbox findMailboxByPath(MailboxPath path) throws MailboxException {
         Mailbox result = null;
+        /*
+        Question 1
+
+        Replace the following for loops with Java 8 Streams
+
+        Hint : Use map, then filter, and finally findFirst
+        
+        Then it becomes easy replacing the last if with a call to orElseThrow.
+         */
         for (Mailbox mailbox:mailboxesById.values()) {
             MailboxPath mp = new MailboxPath(mailbox.getNamespace(), mailbox.getUser(), mailbox.getName());
             if (mp.equals(path)) {
@@ -73,6 +82,11 @@ public class InMemoryMailboxMapper implements MailboxMapper {
     public synchronized Mailbox findMailboxById(MailboxId id) throws MailboxException {
         InMemoryId mailboxId = (InMemoryId)id;
         Mailbox result = mailboxesById.get(mailboxId);
+        /*
+        Question 2
+
+        Replace this call to if by Optional
+         */
         if (result == null) {
             throw new MailboxNotFoundException(mailboxId.serialize());
         } else {
@@ -82,6 +96,11 @@ public class InMemoryMailboxMapper implements MailboxMapper {
 
     public List<Mailbox> findMailboxWithPathLike(MailboxPath path) throws MailboxException {
         final String regex = path.getName().replace("%", ".*");
+        /*
+        Question 3
+
+        Replace the following for loop with calls to Java 8 Stream
+         */
         List<Mailbox> results = new ArrayList<Mailbox>();
         for (Mailbox mailbox:mailboxesById.values()) {
             if (mailboxMatchesRegex(mailbox, path, regex)) {
@@ -112,6 +131,11 @@ public class InMemoryMailboxMapper implements MailboxMapper {
 
     public boolean hasChildren(Mailbox mailbox, char delimiter) throws MailboxException {
         String mailboxName = mailbox.getName() + delimiter;
+        /*
+        Question 4
+
+        Replace the following code with a call to Java 8 Streams
+         */
         for (Mailbox box:mailboxesById.values()) {
             if (belongsToSameUser(mailbox, box) && box.getName().startsWith(mailboxName)) {
                 return true;
