@@ -76,6 +76,11 @@ public class InMemoryMessageMapper extends AbstractMessageMapper {
     @Override
     public long countUnseenMessagesInMailbox(Mailbox mailbox) throws MailboxException {
         long count = 0;
+        /*
+        Question 1 :
+
+        Replace the following for loop with Java 8 streams
+         */
         for (MailboxMessage member : getMembershipByUidForMailbox(mailbox).values()) {
             if (!member.isSeen()) {
                 count++;
@@ -102,6 +107,16 @@ public class InMemoryMessageMapper extends AbstractMessageMapper {
     public Iterator<MailboxMessage> findInMailbox(Mailbox mailbox, MessageRange set, FetchType ftype, int max)
             throws MailboxException {
         List<MailboxMessage> results = new ArrayList<MailboxMessage>(getMembershipByUidForMailbox(mailbox).values());
+        /*
+        Question 2
+
+        Replace the following code by Java 8 streams.
+
+        Help : First filter results. Keep UID inside the MessageRange set.
+        Then sort the results
+        Then limit the number of results
+        Then return the iterator
+         */
         for (Iterator<MailboxMessage> it = results.iterator(); it.hasNext();) {
             if (!set.includes(it.next().getUid())) {
                 it.remove();
@@ -118,6 +133,11 @@ public class InMemoryMessageMapper extends AbstractMessageMapper {
 
     @Override
     public List<MessageUid> findRecentMessageUidsInMailbox(Mailbox mailbox) throws MailboxException {
+        /*
+        Question 3
+
+        Replace the following code by java 8 streams
+         */
         final List<MessageUid> results = new ArrayList<MessageUid>();
         for (MailboxMessage member : getMembershipByUidForMailbox(mailbox).values()) {
             if (member.isRecent()) {
@@ -131,6 +151,17 @@ public class InMemoryMessageMapper extends AbstractMessageMapper {
 
     @Override
     public MessageUid findFirstUnseenMessageUid(Mailbox mailbox) throws MailboxException {
+        /*
+        Question 4
+
+        Replace the following code by java 8 streams
+
+        Hint :
+         - first sort the stream
+         - Then find its first element (Optional)
+         - Map it to get the UID
+         - Return it (null value by default)
+         */
         List<MailboxMessage> memberships = new ArrayList<MailboxMessage>(getMembershipByUidForMailbox(mailbox).values());
         Collections.sort(memberships);
         for (MailboxMessage m : memberships) {
@@ -145,7 +176,16 @@ public class InMemoryMessageMapper extends AbstractMessageMapper {
     public Map<MessageUid, MessageMetaData> expungeMarkedForDeletionInMailbox(Mailbox mailbox, MessageRange set)
             throws MailboxException {
         final Map<MessageUid, MessageMetaData> filteredResult = new HashMap<MessageUid, MessageMetaData>();
+        /*
+        Question 5
 
+        Replace the following code by java 8 streams
+
+        Use a Spliterator to convert Iterator into stream.
+        Filter result to keep message marked as deleted
+        For each of them "peek" operations Allow to run one action
+        Then collect the result as MAP
+         */
         Iterator<MailboxMessage> it = findInMailbox(mailbox, set, FetchType.Metadata, -1);
         while (it.hasNext()) {
             MailboxMessage member = it.next();
