@@ -30,18 +30,19 @@ public class SimpleSubscription implements Subscription {
         this.mailbox = mailbox;
     }
 
-    /**
-     * @see org.apache.james.mailbox.store.user.model.Subscription#getMailbox()
-     */
     public String getMailbox() {
         return mailbox;
     }
 
-    /**
-     * @see org.apache.james.mailbox.store.user.model.Subscription#getUser()
-     */
     public String getUser() {
         return user;
     }
+
+    /*
+    Question 0 :
+
+    Extends Equals and hashCode
+    You will check both user and mailbox
+     */
 
 }
