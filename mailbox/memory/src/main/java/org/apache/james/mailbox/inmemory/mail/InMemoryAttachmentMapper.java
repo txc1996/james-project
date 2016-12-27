@@ -53,8 +53,13 @@ public class InMemoryAttachmentMapper implements AttachmentMapper {
 
     @Override
     public List<Attachment> getAttachments(Collection<AttachmentId> attachmentIds) {
+        /*
+        Question 1
+
+        Replace the following code by Java 8 streams
+         */
         Preconditions.checkArgument(attachmentIds != null);
-        Builder<Attachment> builder = ImmutableList.<Attachment> builder();
+        Builder<Attachment> builder = ImmutableList.builder();
         for (AttachmentId attachmentId : attachmentIds) {
             if (attachmentsById.containsKey(attachmentId)) {
                 builder.add(attachmentsById.get(attachmentId));
