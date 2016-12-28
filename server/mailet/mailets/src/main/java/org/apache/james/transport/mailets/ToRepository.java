@@ -36,10 +36,22 @@ public class ToRepository extends GenericMailet {
 
     private MailRepository repository;
 
+    /*
+    Question 1
+
+    Default value should not be set here. It is already managed by getPassThroughParameter
+
+    You can safely remove the false default value here.
+     */
     private boolean passThrough = false;
 
     private String repositoryPath;
 
+    /*
+    Question 2
+
+    This field should be final and injected via constructor.
+     */
     private MailRepositoryStore mailStore;
 
     @Inject
@@ -62,6 +74,11 @@ public class ToRepository extends GenericMailet {
         }
     }
 
+    /*
+    Question 3
+
+    As part of SOLID principals, repositoryPath should be an argument of the method.
+     */
     private MailRepository selectRepository() throws MessagingException {
         try {
             return mailStore.select(repositoryPath);
@@ -72,6 +89,11 @@ public class ToRepository extends GenericMailet {
 
     @Override
     public void service(Mail mail) throws javax.mail.MessagingException {
+        /*
+        Question 4
+
+        You can directly put the logBuffer string inside the log
+         */
         String logBuffer = "Storing mail " + mail.getName() + " in " + repositoryPath;
         log(logBuffer);
         repository.store(mail);
