@@ -46,6 +46,11 @@ public class SMTPIsAuthNetwork extends GenericMatcher {
     public Collection<MailAddress> match(Mail mail) {
         String relayingAllowed = (String) mail
                 .getAttribute(SMTP_AUTH_NETWORK_NAME);
+        /*
+        Question 3
+
+        Rewrite this with java 8 optionals
+         */
         if (relayingAllowed != null && relayingAllowed.equals("true")) {
             return mail.getRecipients();
         } else {
