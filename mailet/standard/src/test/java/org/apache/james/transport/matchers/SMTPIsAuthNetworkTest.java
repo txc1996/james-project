@@ -20,6 +20,8 @@
 
 package org.apache.james.transport.matchers;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Collection;
 
 import javax.mail.MessagingException;
@@ -30,30 +32,20 @@ import org.apache.mailet.base.test.FakeMail;
 import org.apache.mailet.base.test.FakeMatcherConfig;
 import org.apache.mailet.base.test.MailUtil;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 public class SMTPIsAuthNetworkTest {
 
-    private FakeMail mockedMail;
+    public static final String MAIL_ATTRIBUTE_NAME = "org.apache.james.SMTPIsAuthNetwork";
 
+    private FakeMail mail;
     private Matcher matcher;
 
-    private boolean isAuthorized = false;
-
-    private void setIsAuthorized(boolean isAuthorized) {
-        this.isAuthorized = isAuthorized;
-    }
-
-    private void setupMockedMail() throws MessagingException {
-        mockedMail = MailUtil.createMockMail2Recipients();
-        if (isAuthorized) {
-            String MAIL_ATTRIBUTE_NAME = "org.apache.james.SMTPIsAuthNetwork";
-            mockedMail.setAttribute(MAIL_ATTRIBUTE_NAME, "true");
-        }
-    }
-
-    private void setupMatcher() throws MessagingException {
+    @Before
+    public void setUp() throws MessagingException {
         matcher = new SMTPIsAuthNetwork();
+        mail = MailUtil.createMockMail2Recipients();
         FakeMatcherConfig mci = FakeMatcherConfig.builder()
                 .matcherName("SMTPIsAuthNetwork")
                 .build();
@@ -63,25 +55,28 @@ public class SMTPIsAuthNetworkTest {
 
     @Test
     public void testIsAuthNetwork() throws MessagingException {
-        setIsAuthorized(true);
-        setupMockedMail();
-        setupMatcher();
+        mail.setAttribute(MAIL_ATTRIBUTE_NAME, "true");
+        Collection<MailAddress> matchedRecipients = matcher.match(mail);
 
-        Collection<MailAddress> matchedRecipients = matcher.match(mockedMail);
+        /*
+        Question 1
 
+        Rewrite these assertions with assertJ
+         */
         Assert.assertNotNull(matchedRecipients);
-        Assert.assertEquals(matchedRecipients.size(), mockedMail.getRecipients()
+        Assert.assertEquals(matchedRecipients.size(), mail.getRecipients()
                 .size());
     }
 
     @Test
     public void testIsNotAuthNetwork() throws MessagingException {
-        setIsAuthorized(false);
-        setupMockedMail();
-        setupMatcher();
+        Collection<MailAddress> matchedRecipients = matcher.match(mail);
 
-        Collection<MailAddress> matchedRecipients = matcher.match(mockedMail);
+        /*
+        Question 2
 
+        Rewrite these assertions with assertJ
+         */
         Assert.assertNull(matchedRecipients);
     }
 }
