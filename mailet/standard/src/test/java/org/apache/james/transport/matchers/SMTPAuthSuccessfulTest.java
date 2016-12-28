@@ -20,26 +20,49 @@
 
 package org.apache.james.transport.matchers;
 
-import org.apache.mailet.base.GenericMatcher;
+import static org.assertj.core.api.Assertions.assertThat;
 
-public class SMTPAuthSuccessfulTest extends AbstractHasMailAttributeTest {
+import org.apache.mailet.base.test.FakeMailContext;
+import org.apache.mailet.base.test.FakeMatcherConfig;
+import org.junit.Before;
+import org.junit.Test;
 
-    protected String getHasMailAttribute() {
-        return "";
+public class SMTPAuthSuccessfulTest {
+
+    private SMTPAuthSuccessful testee;
+
+    @Before
+    public void setUp() throws Exception {
+        testee = new SMTPAuthSuccessful();
+        testee.init(FakeMatcherConfig.builder()
+            .mailetContext(FakeMailContext.defaultContext())
+            .build());
     }
 
-    protected GenericMatcher createMatcher() {
-        return new SMTPAuthSuccessful();
+    @Test
+    public void matchShouldReturnRecipientsWhenAuthUserAttributeIsPresent() {
+        /*
+        Question 1
+
+        Create a mail with the attribute SMTPAuthSuccessful.SMTP_AUTH_USER_ATTRIBUTE_NAME with a value, and a recipient
+
+        Match this mail
+
+        As a result, the recipient should be returned
+         */
     }
 
-    protected String getMatcherName() {
-        return "SMTPAuthSuccessful";
-    }
-    
-    protected void init() {
-        super.init();
-        String SMTP_AUTH_USER_ATTRIBUTE_NAME = "org.apache.james.SMTPAuthUser";
-        setMailAttributeName(SMTP_AUTH_USER_ATTRIBUTE_NAME);
+    @Test
+    public void matchShouldNotReturnRecipientsWhenAuthUserAttributeIsAbsent() {
+        /*
+        Question 2
+
+        Create a mail with only a recipient
+
+        Match this mail
+
+        As a result, the recipient should not be returned
+         */
     }
 
 }
