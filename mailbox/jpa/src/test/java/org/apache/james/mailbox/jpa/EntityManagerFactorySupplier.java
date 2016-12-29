@@ -30,6 +30,7 @@ import org.apache.james.mailbox.jpa.mail.model.JPAProperty;
 import org.apache.james.mailbox.jpa.mail.model.JPAUserFlag;
 import org.apache.james.mailbox.jpa.mail.model.openjpa.AbstractJPAMailboxMessage;
 import org.apache.james.mailbox.jpa.mail.model.openjpa.JPAMailboxMessage;
+import org.apache.james.mailbox.jpa.quota.model.JpaCurrentQuota;
 import org.apache.james.mailbox.jpa.user.model.JPASubscription;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 
@@ -55,7 +56,8 @@ public class EntityManagerFactorySupplier implements Supplier<EntityManagerFacto
             JPAProperty.class.getName() + ";" +
             JPAUserFlag.class.getName() + ";" +
             JPAMailboxAnnotation.class.getName() + ";" +
-            JPASubscription.class.getName() + ")");
+            JPASubscription.class.getName() + ";" +
+            JpaCurrentQuota.class.getName() + ")");
 
         return OpenJPAPersistence.getEntityManagerFactory(properties);
     }
