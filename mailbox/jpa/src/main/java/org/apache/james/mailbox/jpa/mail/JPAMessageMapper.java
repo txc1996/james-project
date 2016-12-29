@@ -220,9 +220,14 @@ public class JPAMessageMapper extends AbstractMessageMapper implements MessageMa
     public List<MessageUid> findRecentMessageUidsInMailbox(Mailbox mailbox) throws MailboxException {
         try {
             JPAId mailboxId = (JPAId) mailbox.getMailboxId();
-            Query query = getEntityManager().createNamedQuery("findRecentMessageUidsInMailbox").setParameter("idParam",
-                    mailboxId.getRawId());
-            List<Long> resultList = query.getResultList();
+            List<Long> resultList = getEntityManager().createNamedQuery("findRecentMessageUidsInMailbox")
+                .setParameter("idParam", mailboxId.getRawId())
+                .getResultList();
+            /*
+            Question 1
+
+            Replace this code by some java 8
+             */
             ImmutableList.Builder<MessageUid> results = ImmutableList.builder();
             for (long result: resultList) {
                 results.add(MessageUid.of(result));
@@ -364,6 +369,11 @@ public class JPAMessageMapper extends AbstractMessageMapper implements MessageMa
     }
 
     private Map<MessageUid, MessageMetaData> createMetaData(List<MailboxMessage> uids) {
+        /*
+        Question 2 :
+
+        You can replace this code by java 8 (Use Guavate.toMap)
+         */
         final Map<MessageUid, MessageMetaData> data = new HashMap<MessageUid, MessageMetaData>();
         for (MailboxMessage m : uids) {
             data.put(m.getUid(), new SimpleMessageMetaData(m));
