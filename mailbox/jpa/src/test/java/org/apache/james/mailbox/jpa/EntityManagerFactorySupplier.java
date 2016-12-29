@@ -70,6 +70,11 @@ public class EntityManagerFactorySupplier implements Supplier<EntityManagerFacto
         entityManager.createNativeQuery("TRUNCATE table JAMES_MAILBOX_ANNOTATION;").executeUpdate();
         entityManager.createNativeQuery("TRUNCATE table JAMES_MAILBOX;").executeUpdate();
         entityManager.createNativeQuery("TRUNCATE table JAMES_MAIL;").executeUpdate();
+        /*
+        Question 4.5
+
+        Truncate the quotas tables here
+         */
         entityManager.getTransaction().commit();
         entityManager.close();
     }
