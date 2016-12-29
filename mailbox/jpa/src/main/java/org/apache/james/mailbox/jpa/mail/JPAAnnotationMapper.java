@@ -64,6 +64,11 @@ public class JPAAnnotationMapper extends JPATransactionalMapper implements Annot
     @Override
     public List<MailboxAnnotation> getAllAnnotations(MailboxId mailboxId) {
         JPAId jpaId = (JPAId) mailboxId;
+        /*
+        Question 1
+
+        Rewrite this code with Java 8
+         */
         return Lists.transform(getEntityManager().createNamedQuery("retrieveAllAnnotations", JPAMailboxAnnotation.class)
                 .setParameter("idParam", jpaId.getRawId()).getResultList(),
             READ_ROW);
@@ -73,6 +78,11 @@ public class JPAAnnotationMapper extends JPATransactionalMapper implements Annot
     public List<MailboxAnnotation> getAnnotationsByKeys(MailboxId mailboxId, Set<MailboxAnnotationKey> keys) {
         try {
             final JPAId jpaId = (JPAId) mailboxId;
+            /*
+            Question 2
+
+            Rewrite this code with Java 8
+            */
             return ImmutableList.copyOf(Iterables.transform(keys, new Function<MailboxAnnotationKey, MailboxAnnotation>() {
                 @Override
                 public MailboxAnnotation apply(MailboxAnnotationKey input) {
@@ -91,6 +101,11 @@ public class JPAAnnotationMapper extends JPATransactionalMapper implements Annot
 
     @Override
     public List<MailboxAnnotation> getAnnotationsByKeysWithOneDepth(MailboxId mailboxId, Set<MailboxAnnotationKey> keys) {
+        /*
+        Question 3
+
+        Make this code more readable with a lambda
+         */
         return getFilteredLikes((JPAId) mailboxId,
             keys,
             new Function<MailboxAnnotationKey, Predicate<MailboxAnnotation>>() {
@@ -108,6 +123,11 @@ public class JPAAnnotationMapper extends JPATransactionalMapper implements Annot
 
     @Override
     public List<MailboxAnnotation> getAnnotationsByKeysWithAllDepth(MailboxId mailboxId, Set<MailboxAnnotationKey> keys) {
+        /*
+        Question 4
+
+        Make this code more readable with a lambda
+         */
         return getFilteredLikes((JPAId) mailboxId,
             keys,
             new Function<MailboxAnnotationKey, Predicate<MailboxAnnotation>>() {
@@ -125,6 +145,13 @@ public class JPAAnnotationMapper extends JPATransactionalMapper implements Annot
 
     private List<MailboxAnnotation> getFilteredLikes(final JPAId jpaId, Set<MailboxAnnotationKey> keys, final Function<MailboxAnnotationKey, Predicate<MailboxAnnotation>> predicateFunction) {
         try {
+            /*
+            Question 5
+
+            Rewrite this code with java 8
+
+            You can use flatMap, filter, then collect to a list
+             */
             return flatMapToList(Iterables.transform(keys,
                 new Function<MailboxAnnotationKey, List<MailboxAnnotation>>() {
                     @Override
@@ -146,6 +173,11 @@ public class JPAAnnotationMapper extends JPATransactionalMapper implements Annot
         }
     }
 
+    /*
+    Question 6
+
+    You can remove this method
+     */
     private List<MailboxAnnotation> flatMapToList(Iterable<List<MailboxAnnotation>> likes) {
         ImmutableList.Builder<MailboxAnnotation> resultBuilder = ImmutableList.builder();
         for (List<MailboxAnnotation> mailboxAnnotations: likes) {
