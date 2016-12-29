@@ -30,6 +30,10 @@ import org.apache.james.mailbox.jpa.mail.model.JPAProperty;
 import org.apache.james.mailbox.jpa.mail.model.JPAUserFlag;
 import org.apache.james.mailbox.jpa.mail.model.openjpa.AbstractJPAMailboxMessage;
 import org.apache.james.mailbox.jpa.mail.model.openjpa.JPAMailboxMessage;
+import org.apache.james.mailbox.jpa.quota.model.MaxDefaultMessageCount;
+import org.apache.james.mailbox.jpa.quota.model.MaxDefaultStorage;
+import org.apache.james.mailbox.jpa.quota.model.MaxUserMessageCount;
+import org.apache.james.mailbox.jpa.quota.model.MaxUserStorage;
 import org.apache.james.mailbox.jpa.user.model.JPASubscription;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 
@@ -55,7 +59,11 @@ public class EntityManagerFactorySupplier implements Supplier<EntityManagerFacto
             JPAProperty.class.getName() + ";" +
             JPAUserFlag.class.getName() + ";" +
             JPAMailboxAnnotation.class.getName() + ";" +
-            JPASubscription.class.getName() + ")");
+            JPASubscription.class.getName() + "," +
+            MaxDefaultMessageCount.class.getName() + "," +
+            MaxDefaultStorage.class.getName() + "," +
+            MaxUserMessageCount.class.getName() + "," +
+            MaxUserStorage.class.getName() + ")");
 
         return OpenJPAPersistence.getEntityManagerFactory(properties);
     }
@@ -68,6 +76,11 @@ public class EntityManagerFactorySupplier implements Supplier<EntityManagerFacto
         entityManager.createNativeQuery("TRUNCATE table JAMES_MAILBOX_ANNOTATION;").executeUpdate();
         entityManager.createNativeQuery("TRUNCATE table JAMES_MAILBOX;").executeUpdate();
         entityManager.createNativeQuery("TRUNCATE table JAMES_MAIL;").executeUpdate();
+        /*
+        Question 9 :
+
+        Delete the four tables you created here.
+         */
         entityManager.getTransaction().commit();
         entityManager.close();
     }
