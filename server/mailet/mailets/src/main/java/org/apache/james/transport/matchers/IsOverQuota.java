@@ -1,3 +1,10 @@
+/*
+TODO
+
+Q1 Add APACHE license
+ */
+
+
 package org.apache.james.transport.matchers;
 
 import org.apache.james.mailbox.MailboxManager;
@@ -27,6 +34,12 @@ public class IsOverQuota extends GenericMatcher {
     private QuotaManager quotaManager;
     private MailboxManager mailboxManager;
 
+    /*
+    TODO
+
+    Q2 Make these fields final
+     */
+
     @Inject
     public void setQuotaRootResolver(QuotaRootResolver quotaRootResolver) {
         this.quotaRootResolver = quotaRootResolver;
@@ -47,9 +60,18 @@ public class IsOverQuota extends GenericMatcher {
         try {
             List<MailAddress> result = new ArrayList<MailAddress>();
             for (MailAddress mailAddress : mail.getRecipients()) {
+                /*
+                TODO retrieve the user name that should be used using UsersRepository::getUser
+                 */
                 MailboxSession mailboxSession = mailboxManager.createSystemSession(mailAddress.getLocalPart(), LOGGER);
                 MailboxPath mailboxPath = MailboxPath.inbox(mailboxSession);
                 QuotaRoot quotaRoot = quotaRootResolver.getQuotaRoot(mailboxPath);
+                /*
+                TODO change here to reject emails for account having too many messages or a too big size
+                 */
+                /*
+                TODO we should update the quota with the e-mails value to be more precise on the
+                 */
                 if (quotaManager.getMessageQuota(quotaRoot).isOverQuota() &&
                     quotaManager.getStorageQuota(quotaRoot).isOverQuota()) {
                     result.add(mailAddress);
