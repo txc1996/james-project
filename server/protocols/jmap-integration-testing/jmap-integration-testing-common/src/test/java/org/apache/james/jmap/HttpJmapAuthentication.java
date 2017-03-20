@@ -42,14 +42,14 @@ public class HttpJmapAuthentication {
             .pollInterval(Duration.FIVE_HUNDRED_MILLISECONDS)
             .and().with()
             .pollDelay(Duration.ONE_HUNDRED_MILLISECONDS)
-            .await();
+            .await()
+            .atMost(30, TimeUnit.SECONDS)
+            .ignoreExceptions();
 
     public static AccessToken authenticateJamesUser(URIBuilder uriBuilder, String username, String password) throws ClientProtocolException, IOException, URISyntaxException {
         String continuationToken = getContinuationToken(uriBuilder, username);
 
         Response response = CALMLY_AWAIT
-                .atMost(30, TimeUnit.SECONDS)
-                .ignoreExceptions()
                 .until(() -> postAuthenticate(uriBuilder, password, continuationToken), IsAnything.anything());
 
         return AccessToken.fromString(
@@ -66,13 +66,19 @@ public class HttpJmapAuthentication {
     }
 
     private static String getContinuationToken(URIBuilder uriBuilder, String username) throws ClientProtocolException, IOException, URISyntaxException {
-        Response response = Request.Post(uriBuilder.setPath("/authentication").build())
-            .bodyString("{\"username\": \"" + username + "\", \"clientName\": \"Mozilla Thunderbird\", \"clientVersion\": \"42.0\", \"deviceName\": \"Joe Blogg’s iPhone\"}", 
+        Response response = CALMLY_AWAIT
+            .until(() -> postContinuationToken(uriBuilder, username), IsAnything.anything());
+
+        return JsonPath.parse(response.returnContent().asString())
+            .read("continuationToken");
+    }
+
+    private static Response postContinuationToken(URIBuilder uriBuilder, String username) throws IOException, URISyntaxException {
+        return Request.Post(uriBuilder.setPath("/authentication").build())
+            .bodyString("{\"username\": \"" + username + "\", \"clientName\": \"Mozilla Thunderbird\", \"clientVersion\": \"42.0\", \"deviceName\": \"Joe Blogg’s iPhone\"}",
                     ContentType.APPLICATION_JSON)
             .setHeader("Accept", ContentType.APPLICATION_JSON.getMimeType())
             .execute();
-        return JsonPath.parse(response.returnContent().asString())
-            .read("continuationToken");
     }
 
 }
