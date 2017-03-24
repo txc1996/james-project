@@ -19,6 +19,7 @@
 
 package org.apache.james.transport.matchers;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.mail.MessagingException;
@@ -27,26 +28,36 @@ import org.apache.mailet.Mail;
 import org.apache.mailet.MailAddress;
 import org.apache.mailet.base.GenericMatcher;
 
+import com.google.common.collect.ImmutableList;
+
 public class TooMuchRecipients extends GenericMatcher {
 
     private int maximumRecipientCount;
 
     @Override
     public void init() throws MessagingException {
-        /*
-        Question 1:
-
-        Read maximumRecipientCount from condition.
-         */
+    	String condition = getCondition();
+    	
+    	if(condition == null){
+    		throw new MessagingException("it should have a condition");
+    	}
+    	
+    	try {
+    		maximumRecipientCount = Integer.parseInt(condition);
+		} catch (Exception e) {
+			throw new MessagingException("Condition should be a number");
+		}
+    	
+    	if(maximumRecipientCount < 1){
+    		throw new MessagingException("it should be positive condition");
+    	}
     }
 
     @Override
     public Collection<MailAddress> match(Mail mail) throws MessagingException {
-        /*
-        Question 2:
-
-        If a mail have too much recipients, we return all it's recipients. Else we return an empty collection
-         */
-        return null;
+    	if(mail.getRecipients().size() > maximumRecipientCount){
+    		return mail.getRecipients();
+    	}
+        return ImmutableList.of();
     }
 }
